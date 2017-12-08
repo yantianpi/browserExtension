@@ -1,0 +1,17 @@
+{
+  "name": "__MSG_extName__",
+  "version": "0.3",
+  "manifest_version": 2,
+  "description": "__MSG_extDesc__",
+  "browser_action": {
+    "default_title": "__MSG_extName__",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  },
+  "default_locale": "en",
+  "optional_permissions": ["management"],
+  "permissions": ["downloads", "downloads.open", "downloads.shelf"]
+}

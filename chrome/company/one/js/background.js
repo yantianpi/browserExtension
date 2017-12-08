@@ -86,15 +86,36 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         var tmpDomain = getDomainFromUrl(tab.url).toLowerCase();
         if (tmpSetting.domainArray.indexOf(tmpDomain) != -1) {
             console.log("download: " + tab.url);
-            fileName = "D://" + tmpDomain + "/" + currentDate('ymd') + "/" + md5(tab.url) + ".html";
+            fileName = tmpDomain + "/" + currentDate('ymd') + "/" + md5(tab.url) + ".html";
             console.log(fileName);
             // https://developer.chrome.com/extensions/downloads#method-download
+            var currentDownloadId = 0;
             chrome.downloads.download({
                 url: tab.url,
                 filename: fileName,
                 conflictAction: 'overwrite',
                 saveAs: false
-            }, function () {});
+            }, function (downloadId) {
+                if (downloadId == undefined) {
+                    console.log('download error, ' + chrome.runtime.lastError);
+                } else {
+                    currentDownloadId = downloadId;
+                    console.log("downloadId: " + downloadId);
+                    if (tmpSetting.saveWay == 'server') {
+                        console.log('upload');
+                        //todo file upload
+
+                        if (downloadId != 0) {
+                            console.log('remove file: ' + downloadId);
+                            chrome.downloads.removeFile(downloadId, function () {
+                                console.log("remove file later, " + chrome.runtime.lastError);
+                            });
+                            console.log('peter');
+                        }
+                    }
+                }
+            });
+            console.log("currentDownloadId: " + currentDownloadId);
         }
     }
 });
