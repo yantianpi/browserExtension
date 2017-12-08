@@ -50,10 +50,34 @@ function currentDate(type) {
     return result;
 }
 
+function getDownloadIds() {
+    var ids = [];
+    try {
+        ids = JSON.parse(localStorage.downloadIdsString);
+    } catch (e) {
+        localStorage.downloadIdsString = JSON.stringify(ids);
+    }
+    return ids;
+}
+function setDownloadIds(ids) {
+    localStorage.downloadIdsString = JSON.stringify(ids);
+}
+
+function uploadServer(data) {
+    var scanUrl = data.scanUrl | '';
+    var filePath = data.filePath | '';
+    var saveWay = settingData.saveWay | '';
+    var serverUrl = settingData.serverUrl | '';
+    var userName = settingData.userName | '';
+    //todo, to be continue, form
+    return;
+}
+
 var settingData = {};
 settingData.error = "init...";
 initSetting();
 
+// https://developer.chrome.com/extensions/runtime#event-onMessage
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     type = message.type || '';
     console.log("chrome.runtime.onMessage.addListener " + type);
@@ -85,11 +109,11 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (tmpSetting.status == 'start') {
         var tmpDomain = getDomainFromUrl(tab.url).toLowerCase();
         if (tmpSetting.domainArray.indexOf(tmpDomain) != -1) {
-            console.log("download: " + tab.url);
-            fileName = tmpDomain + "/" + currentDate('ymd') + "/" + md5(tab.url) + ".html";
-            console.log(fileName);
+            // console.log("download: " + tab.url);
+            var tmpdateYMD = currentDate('ymd');
+            var tmpdateYMDHM = currentDate('ymdhm');
+            var fileName = tmpDomain + "/" + tmpdateYMD + "/" + tmpDomain + "_" + tmpdateYMDHM + "_" + md5(tab.url) + ".html";
             // https://developer.chrome.com/extensions/downloads#method-download
-            var currentDownloadId = 0;
             chrome.downloads.download({
                 url: tab.url,
                 filename: fileName,
@@ -97,25 +121,50 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
                 saveAs: false
             }, function (downloadId) {
                 if (downloadId == undefined) {
-                    console.log('download error, ' + chrome.runtime.lastError);
+                    console.warn('download error, ' + chrome.runtime.lastError.message);
                 } else {
-                    currentDownloadId = downloadId;
-                    console.log("downloadId: " + downloadId);
-                    if (tmpSetting.saveWay == 'server') {
-                        console.log('upload');
-                        //todo file upload
-
-                        if (downloadId != 0) {
-                            console.log('remove file: ' + downloadId);
-                            chrome.downloads.removeFile(downloadId, function () {
-                                console.log("remove file later, " + chrome.runtime.lastError);
-                            });
-                            console.log('peter');
-                        }
+                    var ids = getDownloadIds();
+                    if (ids.indexOf(downloadId) >= 0) {
+                        //
+                    } else {
+                        ids.push(downloadId);
                     }
+                    setDownloadIds(ids);
                 }
             });
-            console.log("currentDownloadId: " + currentDownloadId);
+        }
+    }
+});
+
+// https://developer.chrome.com/extensions/downloads#event-onChanged
+chrome.downloads.onChanged.addListener(function(delta) {
+    console.log("chrome.downloads.onChanged.addListener");
+    return;
+    if (!delta.state || (delta.state.current != 'complete')) {
+        return;
+    } else {
+        var ids = getDownloadIds();
+        if (ids.indexOf(delta.id) < 0) {
+            return;
+        } else {
+            ids.splice(ids.indexOf(delta.id), 1);
+            setDownloadIds(ids);
+            chrome.downloads.search({'id':delta.id}, function (results) {
+                results.forEach(function (item,index,list) {
+                    // console.log(item);
+                    var filePath = item.filename;
+                    var scanUrl = item.url;
+                    if (settingData.saveWay == 'server') { // upload server
+                        var data = {
+                            'scanUrl': url,
+                            'filePath': filePath,
+                        };
+                        uploadServer(data);
+                    }
+                    //remove file
+                    // chrome.downloads.removeFile(item.id, function () {});
+                });
+            });
         }
     }
 });
