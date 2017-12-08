@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Setting</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="contentError"></div>
+    <div id="contentForm">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Setting
+                </h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" id="form">
+                    <div class="form-group">
+                        <label for="selectSaveWay" class="col-xs-4 control-label">SaveWay</label>
+                        <div class="col-xs-16">
+                            <select class="form-control" id="selectSaveWay">
+                                <option value="server">server</option>
+                                <option value="local">local</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDomain" class="col-xs-4 control-label">
+                            Domain
+                        </label>
+                        <div class="col-xs-12">
+                            <input type="text" class="form-control" id="inputDomain" placeholder="domain">
+                        </div>
+                        <div class="col-xs-4">
+                            <button type="button" class="btn btn-default" id="inputDomainButton">Add</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-4 control-label">
+                            Domain List
+                        </label>
+                        <div class="col-xs-16" id="contentDomainList">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="selectStatus" class="col-xs-4 control-label">Status</label>
+                        <div class="col-xs-16">
+                            <select class="form-control" id="selectStatus">
+                                <option value="start">start</option>
+                                <option value="pause">pause</option>
+                                <option value="stop">stop</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-offset-4 col-xs-4">
+                            <button type="submit" class="btn btn-info" id="buttonSave">Save</button>
+                        </div>
+                        <div class="col-xs-offset-4 col-xs-4">
+                            <button type="button" class="btn btn-info" id="buttonReload">reload</button>
+                        </div>
+                        <div class="col-xs-offset-4 col-xs-4">
+                            <button type="button" class="btn btn-info" id="buttonScan">scan</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="bootstrap/js/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstrap/js/bootstrapValidator.min.js"></script>
+    <script src="js/options.js"></script>
+</body>
+</html>
