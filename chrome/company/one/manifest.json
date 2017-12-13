@@ -4,12 +4,14 @@
   "version": "1.0",
   "description": "Save Scanning History",
   "background": {
-    "scripts": ["js/md5.min.js", "js/background.js"]
+    "scripts": ["bootstrap/js/jquery.min.js", "js/md5.min.js", "js/background.js"]
   },
   "permissions": [
     "tabs",
     "downloads",
+    "notifications",
     "<all_urls>"
   ],
+  "web_accessible_resources": [],
   "options_page": "options.html"
 }

@@ -26,16 +26,17 @@ function loadSetting() {
     console.log("js options loadSetting data:");
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
         data = backgroundPage.settingData;
-        console.log(data);
-        console.log(data.saveWay);
-        console.log(data.status);
-        console.log(data.domainArray);
+        // console.log(data);
+        // console.log(data.saveWay);
+        // console.log(data.status);
+        // console.log(data.domainArray);
         if(data.error){
             $("#contentError").html(data.error);
             $("#contentForm").hide();
         }else{
             $("#contentDomainList").html('');
             $("#contentError").hide();
+            $("#inputUserName").val(data.userName);
             $("#selectSaveWay").val(data.saveWay);
             $("#selectStatus").val(data.status);
             domainArray = data.domainArray || [];
@@ -73,15 +74,23 @@ $(function () {
     $("#form").bind('submit', function () {
         var saveWay = $("#selectSaveWay").val();
         var status = $("#selectStatus").val();
+        var userName = $("#inputUserName").val();
         var domainArray = jqcheck('domain');
+        if (userName == '') {
+            alert('UserName is null');
+            $("#inputUserName").focus();
+            return false;
+        }
         var msg = {
             type: "setting-save",
             saveWay : saveWay,
             status : status,
+            userName : userName,
             domainArray : domainArray,
         };
         chrome.runtime.sendMessage(msg);
         loadSetting();
+        return true;
     });
 
     // add domain

@@ -22,6 +22,7 @@ function initSetting() {
     }
     settingData.saveWay = localStorage.saveWay || 'local';
     settingData.status = localStorage.status || 'start';
+    settingData.userName = localStorage.userName || '';
     settingData.error = "";
     console.log(settingData);
 }
@@ -64,13 +65,28 @@ function setDownloadIds(ids) {
 }
 
 function uploadServer(data) {
-    var scanUrl = data.scanUrl | '';
-    var filePath = data.filePath | '';
-    var saveWay = settingData.saveWay | '';
-    var serverUrl = settingData.serverUrl | '';
-    var userName = settingData.userName | '';
-    //todo, to be continue, form
-    return;
+    console.info('uploading...');
+    var scanUrl = data.scanUrl || '';
+    var filePath = data.filePath || '';
+    var saveWay = settingData.saveWay || '';
+    var userName = settingData.userName || '';
+    var form = new FormData();
+    form.append("action", "scanHistory");
+    form.append("userName", userName);
+    form.append("scanUrl", scanUrl);
+    form.append("filePath", filePath);
+    if (saveWay == 'server') {
+        $.ajax({
+            url:"http://dev.demo.com/scanDeal.php",
+            type:"post",
+            data:form,
+            processData:false,
+            contentType:false,
+            success:function(data){
+                console.log("success..." + data);
+            }
+        });
+    }
 }
 
 var settingData = {};
@@ -85,6 +101,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         case "setting-save":
             localStorage.saveWay = message.saveWay;
             localStorage.status = message.status;
+            localStorage.userName = message.userName;
             localStorage.domainListString = message.domainArray.join(",").toLowerCase();
             initSetting();
             break;
@@ -139,7 +156,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 // https://developer.chrome.com/extensions/downloads#event-onChanged
 chrome.downloads.onChanged.addListener(function(delta) {
     console.log("chrome.downloads.onChanged.addListener");
-    return;
     if (!delta.state || (delta.state.current != 'complete')) {
         return;
     } else {
@@ -151,15 +167,23 @@ chrome.downloads.onChanged.addListener(function(delta) {
             setDownloadIds(ids);
             chrome.downloads.search({'id':delta.id}, function (results) {
                 results.forEach(function (item,index,list) {
-                    // console.log(item);
+                    console.warn(item);
                     var filePath = item.filename;
-                    var scanUrl = item.url;
+                    var scanUrl = item.finalUrl;
+                    var fileSize = item.fileSize;
+                    if (fileSize < 1024) {
+                        chrome.downloads.removeFile(item.id, function () {});
+                        return;
+                    }
                     if (settingData.saveWay == 'server') { // upload server
                         var data = {
-                            'scanUrl': url,
+                            'scanUrl': scanUrl,
                             'filePath': filePath,
                         };
+                        // console.log('download finished');
                         uploadServer(data);
+                    } else {
+                        console.log('download local');
                     }
                     //remove file
                     // chrome.downloads.removeFile(item.id, function () {});
