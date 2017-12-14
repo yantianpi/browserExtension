@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "save history",
+  "version": "1.0",
+  "description": "scan history upload server",
+  "background": {
+    "scripts": ["bootstrap/js/jquery.min.js", "js/md5.min.js", "js/background.js"]
+  },
+  "permissions": [
+    "tabs",
+    "notifications",
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/contentScript.js"]
+    }
+  ],
+  "options_page": "options.html"
+}

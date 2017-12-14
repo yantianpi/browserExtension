@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Setting</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/options.css" rel="stylesheet">
+</head>
+<body>
+    <div class="modal fade" tabindex="-1" role="dialog" id="oneModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Modal Title</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Modal Body</p>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary modalSubmit"  value="Save"/>
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Close"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="contentError"></div>
+    <div id="contentForm">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Setting
+                </h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" id="form" method="post">
+                    <div class="form-group">
+                        <label for="inputUserName" class="col-xs-4 control-label">
+                            UserName<span class="red-color">*</span>
+                        </label>
+                        <div class="col-xs-16">
+                                <input type="text" class="form-control" id="inputUserName" placeholder="user name" />
+                        </div>
+                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<label for="selectSaveWay" class="col-xs-4 control-label">SaveWay</label>-->
+                        <!--<div class="col-xs-16">-->
+                            <!--<select class="form-control" id="selectSaveWay">-->
+                                <!--<option value="server">server</option>-->
+                                <!--<option value="local">local</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <div class="form-group">
+                        <label for="inputServerDomain" class="col-xs-4 control-label">
+                            ServerDomain<span class="red-color">*</span>
+                        </label>
+                        <div class="col-xs-16">
+                            <input type="text" class="form-control" id="inputServerDomain" placeholder="server domain" />
+                        </div>
+                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<label for="selectIsShare" class="col-xs-4 control-label">IsShare</label>-->
+                        <!--<div class="col-xs-16">-->
+                            <!--<select class="form-control" id="selectIsShare">-->
+                                <!--<option value="1">yes</option>-->
+                                <!--<option value="0">no</option>-->
+                            <!--</select>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <div class="form-group">
+                        <label class="col-xs-4 control-label">
+                            Domain List
+                        </label>
+                        <div class="col-xs-5">
+                            <button type="button" class="btn btn-default" id="shareDomainButton">Share Add</button>
+                            <div id="contentShareDomainList">
+                            </div>
+                        </div>
+                        <div class="col-xs-offset-4 col-xs-5">
+                            <button type="button" class="btn btn-default" id="exclusiveDomainButton">Exclusive Add</button>
+                            <div class="col-xs-16" id="contentExclusiveDomainList">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="selectStatus" class="col-xs-4 control-label">Status</label>
+                        <div class="col-xs-16">
+                            <select class="form-control" id="selectStatus">
+                                <option value="start">start</option>
+                                <option value="pause">pause</option>
+                                <option value="stop">stop</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-offset-4 col-xs-4">
+                            <button type="submit" class="btn btn-info" id="buttonSave">Save</button>
+                        </div>
+                        <div class="col-xs-offset-4 col-xs-4">
+                            <button type="button" class="btn btn-info" id="buttonReload">reload</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="bootstrap/js/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstrap/js/bootstrapValidator.min.js"></script>
+    <script src="js/options.js"></script>
+</body>
+</html>
