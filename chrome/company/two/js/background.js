@@ -25,8 +25,11 @@ function initSetting() {
     } else {
         settingData.exclusiveDomainArray = [];
     }
+    if (localStorage.minLength) {
+        settingData.minLength = localStorage.minLength;
+    }
     settingData.serverDomain = localStorage.serverDomain || '';
-    settingData.status = localStorage.status || 'start';
+    settingData.status = localStorage.status;
     settingData.userName = localStorage.userName || '';
     settingData.error = "";
     console.log(settingData);
@@ -36,6 +39,7 @@ function currentDate(type) {
     var today=new Date();
     var year = today.getFullYear();
     var month = today.getMonth();
+    month = month + 1;
     var day = today.getDate();
     var hour = today.getHours();
     var minute =today.getMinutes();
@@ -96,9 +100,11 @@ function uploadServer(data) {
     form.append("pageDomain", pageDomain);
     form.append("grabTime", currentDate("ymdhm"));
     form.append("content", content);
+    form.append("contentLength", content.length);
     console.log("save page:" + pageUrl);
+    console.log("length:" + content.length);
     $.ajax({
-        url:"http://" + serverDomain + "/scanDeal.php",
+        url:"http://" + serverDomain + "/pluginDeal.php",
         type:"post",
         data:form,
         processData:false,
@@ -133,7 +139,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             console.log("setting-save");
             localStorage.serverDomain = message.serverDomain;
             localStorage.status = message.status;
-            localStorage.userName = message.userName;
+            if (message.minLength > 0) {
+                localStorage.minLength = message.minLength;
+            }
+            if (message.verifyUserNameFlag == 1) {
+                localStorage.userName = message.userName;
+            }
             localStorage.shareDomainString = message.shareDomainArray.join(",").toLowerCase();
             localStorage.exclusiveDomainString = message.exclusiveDomainArray.join(",").toLowerCase();
             initSetting();
@@ -145,18 +156,63 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             console.log('page-save');
             pageSave(message);
             break;
+        // case "page-save-two":
+        //     console.log('page-save-two');
+        //     pageSave(message);
+        //     break;
         default:
     }
 });
 
+// chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+//     chrome.tabs.executeScript(tabId, {
+//         "file": "js/savePage.js",
+//         "runAt": "document_end"
+//     });
+// });
+
+// chrome.webRequest.onCompleted.addListener(
+//     function (details) {
+//         var tmpUrl = details.url;
+//         var statusCode = "" + details.statusCode;
+//         if (statusCode.charAt(0) == 2) {
+//             chrome.tabs.query({}, function (result) {
+//                 result.forEach(function (item,index,list) {
+//                     if (item.url == tmpUrl) {
+//                         console.error(item.url);
+//                         var tabId = item.id;
+//                         chrome.tabs.executeScript(tabId,
+//                             {
+//                                 "file": "js/savePage.js",
+//                                 "runAt": "document_end"
+//                             }
+//                         );
+//                     }
+//                 });
+//             });
+//         } else {
+//             // console.log(statusCode);
+//             // console.log(tmpUrl);
+//         }
+//         // chrome.tabs.query();
+//     },
+//     {
+//         urls : [
+//             "<all_urls>"
+//         ]
+//     }
+// );
+
 function pageSave(msg) {
     if (!settingData.error) {
-        var status = settingData.status || "start";
+        console.info(msg);
+        var status = settingData.status;
         var shareDomainArray = settingData.shareDomainArray || [];
         var exclusiveDomainArray = settingData.exclusiveDomainArray || [];
-        if (status == "start") {
+        var minLength = settingData.minLength || 1000;
+        if (status == "enabled") {
             var tmpUrl = msg.currentUrl || '';
-            var tmpDomain = msg.currentDomain || '';
+            var tmpDomain = msg.currentHost || '';
             var tmpHtml = msg.currentHtml || '';
             var tmpShare = -1;
             if (shareDomainArray.indexOf(tmpDomain) != -1) {
@@ -164,7 +220,7 @@ function pageSave(msg) {
             } else if (exclusiveDomainArray.indexOf(tmpDomain) != -1) {
                 tmpShare = 0;
             }
-            if (tmpShare != -1) {
+            if (tmpShare != -1 && tmpHtml.length > minLength) {
                 var data = {
                     "pageUrl": tmpUrl,
                     "pageDomain": tmpDomain,

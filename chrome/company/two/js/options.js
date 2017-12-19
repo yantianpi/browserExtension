@@ -1,6 +1,7 @@
 /**
  * Created by peteryan on 2017/12/6.
  */
+var settingData = {};
 if (!String.prototype.trim){
 
     /*---------------------------------------
@@ -33,20 +34,25 @@ function isArrayFn(value){
 }
 
 function loadSetting() {
-    console.log("js options loadSetting data:");
+    console.log("js options loadSetting data.");
+    $("#verifyUserNameFlag").val(0);
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
-        var data = backgroundPage.settingData;
-        // console.log(data);
-        if(data.error){
-            $("#contentError").html(data.error);
+        settingData = backgroundPage.settingData;
+        // console.log(settingData);
+        if(settingData.error){
+            $("#contentError").html(settingData.error);
             $("#contentForm").hide();
         }else{
-            $("#contentDomainList").html('');
+            $("#contentShareDomainList").html('');
+            $("#contentExclusiveDomainList").html('');
             $("#contentError").hide();
-            $("#inputUserName").val(data.userName);
-            $("#inputServerDomain").val(data.serverDomain);
-            $("#selectStatus").val(data.status);
-            var shareDomainArray = data.shareDomainArray || [];
+            $("#inputUserName").val(settingData.userName);
+            $("#inputServerDomain").val(settingData.serverDomain);
+            $("#inputMinLength").val(settingData.minLength);
+            if (settingData.status) {
+                $("#selectStatus").val(settingData.status);
+            }
+            var shareDomainArray = settingData.shareDomainArray || [];
             if (isArrayFn(shareDomainArray)) {
                 var selectHtml = '';
                 shareDomainArray.forEach(function (item,index,list) {
@@ -58,7 +64,7 @@ function loadSetting() {
             } else {
                 console.log(shareDomainArray);
             }
-            var exclusiveDomainArray = data.exclusiveDomainArray || [];
+            var exclusiveDomainArray = settingData.exclusiveDomainArray || [];
             if (isArrayFn(exclusiveDomainArray)) {
                 var selectHtml = '';
                 exclusiveDomainArray.forEach(function (item,index,list) {
@@ -74,26 +80,37 @@ function loadSetting() {
     });
 }
 $(function () {
-    var data = {};
     loadSetting();
-
-    $("#buttonScan").on("click", function () {
-        var msg = {
-            type: "scan-background-value",
-        };
-        chrome.runtime.sendMessage(msg);
-    });
 
     // reload setting
     $("#buttonReload").on("click", function () {
         loadSetting();
     });
 
+    $("#inputUserName").on("blur", function () {
+        var userName = $(this).val();
+        var tmpName = settingData.userName || '';
+        console.log(settingData);
+        if (userName != tmpName) {
+            $("#verifyUserNameFlag").val(0);
+            var modal = $("#oneModal");
+            modal.find('.modal-title').text('UserName Verify');
+            modal.find('.modal-body').html('<div>Original UserName:' + tmpName + ' Verify UserName:' + userName + '</div>Password: <input type="password" rows="5" cols="70" id="inputPassword" /><input type="hidden" name="modalType" value="userNameVerify" />');
+            modal.find(".modalSubmit").val("Verify");
+            $("#oneModal").modal({
+                    backdrop: "static"
+                }
+            );
+        }
+    });
+
     // save settting
     $("#form").bind('submit', function () {
         var status = $("#selectStatus").val();
         var userName = $("#inputUserName").val();
+        var verifyUserNameFlag = $("#verifyUserNameFlag").val();
         var serverDomain = $("#inputServerDomain").val();
+        var minLength = $("#inputMinLength").val();
         var shareDomainArray = jqcheck('shareDomain');
         var exclusiveDomainArray = jqcheck('exclusiveDomain');
         console.log(shareDomainArray);
@@ -111,10 +128,12 @@ $(function () {
         var msg = {
             type: "setting-save",
             serverDomain : serverDomain,
+            minLength : minLength,
             status : status,
             userName : userName,
             shareDomainArray : shareDomainArray,
             exclusiveDomainArray : exclusiveDomainArray,
+            verifyUserNameFlag : verifyUserNameFlag,
         };
         chrome.runtime.sendMessage(msg);
         loadSetting();
@@ -147,11 +166,11 @@ $(function () {
     // domain add
     $(".modalSubmit").on("click", function () {
         var type = $('input[name="modalType"]').val();
-        var domainArray = $("#textareaDomain").val().toLowerCase().split(",") || [];
-        if (domainArray && type) {
-            var selectHtml = "";
+        if (type) {
             switch (type) {
                 case "shareDomainAdd":
+                    var domainArray = $("#textareaDomain").val().toLowerCase().split(",") || [];
+                    var selectHtml = "";
                     domainArray.forEach(function (item,index,list) {
                         var tmp = item.trim();
                         if (tmp) {
@@ -164,8 +183,11 @@ $(function () {
                     if (selectHtml) {
                         $("#contentShareDomainList").prepend(selectHtml);
                     }
+                    $("#oneModal").modal("hide");
                     break;
                 case "exclusiveDomainAdd":
+                    var domainArray = $("#textareaDomain").val().toLowerCase().split(",") || [];
+                    var selectHtml = "";
                     domainArray.forEach(function (item,index,list) {
                         var tmp = item.trim();
                         if (tmp) {
@@ -178,11 +200,49 @@ $(function () {
                     if (selectHtml) {
                         $("#contentExclusiveDomainList").prepend(selectHtml);
                     }
+                    $("#oneModal").modal("hide");
+                    break;
+                case "userNameVerify":
+                    var currentUserName = $("#inputUserName").val();
+                    var password = $("#inputPassword").val();
+                    if (!password) {
+                        alert('password is empty');
+                    } else {
+                        var serverDomain = $("#inputServerDomain").val();
+                        if (!serverDomain) {
+                            alert('please setting ServerDomain');
+                        } else {
+                            var form = new FormData();
+                            form.append("action", "userNameVerify");
+                            form.append("userName", currentUserName);
+                            form.append("password", password);
+                            console.log("verify userName:" + currentUserName);
+                            $.ajax({
+                                url:"http://" + serverDomain + "/pluginDeal.php",
+                                type:"post",
+                                data:form,
+                                processData:false,
+                                contentType:false,
+                                dataType:"text",
+                                success:function(msg){
+                                    if (msg == 'success') {
+                                        alert('verify successfully!');
+                                        $("#verifyUserNameFlag").val(1);
+                                        $("#oneModal").modal("hide");
+                                    } else {
+                                        alert('verify failed!');
+                                    }
+                                },
+                                error:function () {
+                                    alert("verify failed!please checkout ServerDomain or network");
+                                }
+                            });
+                        }
+                    }
                     break;
                 default:
             }
         }
-        $("#oneModal").modal("hide");
     });
 
 });
