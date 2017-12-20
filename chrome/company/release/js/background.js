@@ -15,11 +15,11 @@ function getDomainFromUrl(url){
 
 function initSetting() {
     console.log('background initSetting data:');
-    if (localStorage.shareDomainString) {
-        settingData.shareDomainArray = localStorage.shareDomainString.toLowerCase().split(',') || [];
-    } else {
-        settingData.shareDomainArray = [];
-    }
+    // if (localStorage.shareDomainString) {
+    //     settingData.shareDomainArray = localStorage.shareDomainString.toLowerCase().split(',') || [];
+    // } else {
+    //     settingData.shareDomainArray = [];
+    // }
     if (localStorage.exclusiveDomainString) {
         settingData.exclusiveDomainArray = localStorage.exclusiveDomainString.toLowerCase().split(',') || [];
     } else {
@@ -146,7 +146,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             if (message.verifyUserNameFlag == 1) {
                 localStorage.userName = message.userName;
             }
-            localStorage.shareDomainString = message.shareDomainArray.join(",").toLowerCase();
+            // localStorage.shareDomainString = message.shareDomainArray.join(",").toLowerCase();
             localStorage.exclusiveDomainString = message.exclusiveDomainArray.join(",").toLowerCase();
             initSetting();
             break;
@@ -165,63 +165,24 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     }
 });
 
-// chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-//     chrome.tabs.executeScript(tabId, {
-//         "file": "js/savePage.js",
-//         "runAt": "document_end"
-//     });
-// });
-
-// chrome.webRequest.onCompleted.addListener(
-//     function (details) {
-//         var tmpUrl = details.url;
-//         var statusCode = "" + details.statusCode;
-//         if (statusCode.charAt(0) == 2) {
-//             chrome.tabs.query({}, function (result) {
-//                 result.forEach(function (item,index,list) {
-//                     if (item.url == tmpUrl) {
-//                         console.error(item.url);
-//                         var tabId = item.id;
-//                         chrome.tabs.executeScript(tabId,
-//                             {
-//                                 "file": "js/savePage.js",
-//                                 "runAt": "document_end"
-//                             }
-//                         );
-//                     }
-//                 });
-//             });
-//         } else {
-//             // console.log(statusCode);
-//             // console.log(tmpUrl);
-//         }
-//         // chrome.tabs.query();
-//     },
-//     {
-//         urls : [
-//             "<all_urls>"
-//         ]
-//     }
-// );
-
 function pageSave(msg) {
     if (!settingData.error) {
         console.info(msg);
         var status = settingData.status;
-        var shareDomainArray = settingData.shareDomainArray || [];
+        // var shareDomainArray = settingData.shareDomainArray || [];
         var exclusiveDomainArray = settingData.exclusiveDomainArray || [];
         var minLength = settingData.minLength || 1000;
         if (status == "enabled") {
             var tmpUrl = msg.currentUrl || '';
             var tmpDomain = msg.currentHost || '';
             var tmpHtml = msg.currentHtml || '';
-            var tmpShare = -1;
-            if (shareDomainArray.indexOf(tmpDomain) != -1) {
-                tmpShare = 1;
-            } else if (exclusiveDomainArray.indexOf(tmpDomain) != -1) {
-                tmpShare = 0;
-            }
-            if (tmpShare != -1 && tmpHtml.length > minLength) {
+            var tmpShare = 0;
+            // if (shareDomainArray.indexOf(tmpDomain) != -1) {
+            //     tmpShare = 1;
+            // } else if (exclusiveDomainArray.indexOf(tmpDomain) != -1) {
+            //     tmpShare = 0;
+            // }
+            if (exclusiveDomainArray.indexOf(tmpDomain) != -1 && tmpHtml.length > minLength) {
                 var data = {
                     "pageUrl": tmpUrl,
                     "pageDomain": tmpDomain,

@@ -1,18 +1,16 @@
 {
   "manifest_version": 2,
-  "name": "save history",
+  "name": "page html snapshot",
   "version": "1.0",
-  "description": "scan history upload server",
+  "description": "page html snapshot",
   "background": {
     "scripts": ["bootstrap/js/jquery.min.js", "js/md5.min.js", "js/background.js"]
   },
   "permissions": [
     "tabs",
     "notifications",
-//    "webRequest",
     "<all_urls>"
   ],
-  "web_accessible_resources": [],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

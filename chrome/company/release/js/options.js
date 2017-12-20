@@ -43,7 +43,7 @@ function loadSetting() {
             $("#contentError").html(settingData.error);
             $("#contentForm").hide();
         }else{
-            $("#contentShareDomainList").html('');
+            // $("#contentShareDomainList").html('');
             $("#contentExclusiveDomainList").html('');
             $("#contentError").hide();
             $("#inputUserName").val(settingData.userName);
@@ -52,18 +52,18 @@ function loadSetting() {
             if (settingData.status) {
                 $("#selectStatus").val(settingData.status);
             }
-            var shareDomainArray = settingData.shareDomainArray || [];
-            if (isArrayFn(shareDomainArray)) {
-                var selectHtml = '';
-                shareDomainArray.forEach(function (item,index,list) {
-                    selectHtml += '<div class="checkbox"> <label> <input type="checkbox" value="' + item.toLowerCase() + '" name="shareDomain" checked>' + item.toLowerCase() + '</label> </div>';
-                });
-                if (selectHtml) {
-                    $("#contentShareDomainList").html(selectHtml);
-                }
-            } else {
-                console.log(shareDomainArray);
-            }
+            // var shareDomainArray = settingData.shareDomainArray || [];
+            // if (isArrayFn(shareDomainArray)) {
+            //     var selectHtml = '';
+            //     shareDomainArray.forEach(function (item,index,list) {
+            //         selectHtml += '<div class="checkbox"> <label> <input type="checkbox" value="' + item.toLowerCase() + '" name="shareDomain" checked>' + item.toLowerCase() + '</label> </div>';
+            //     });
+            //     if (selectHtml) {
+            //         $("#contentShareDomainList").html(selectHtml);
+            //     }
+            // } else {
+            //     console.log(shareDomainArray);
+            // }
             var exclusiveDomainArray = settingData.exclusiveDomainArray || [];
             if (isArrayFn(exclusiveDomainArray)) {
                 var selectHtml = '';
@@ -111,9 +111,8 @@ $(function () {
         var verifyUserNameFlag = $("#verifyUserNameFlag").val();
         var serverDomain = $("#inputServerDomain").val();
         var minLength = $("#inputMinLength").val();
-        var shareDomainArray = jqcheck('shareDomain');
+        // var shareDomainArray = jqcheck('shareDomain');
         var exclusiveDomainArray = jqcheck('exclusiveDomain');
-        console.log(shareDomainArray);
         console.log(exclusiveDomainArray);
         if (userName == '') {
             alert('UserName is null');
@@ -131,7 +130,7 @@ $(function () {
             minLength : minLength,
             status : status,
             userName : userName,
-            shareDomainArray : shareDomainArray,
+            // shareDomainArray : shareDomainArray,
             exclusiveDomainArray : exclusiveDomainArray,
             verifyUserNameFlag : verifyUserNameFlag,
         };
@@ -141,23 +140,23 @@ $(function () {
     });
 
     // modal share domain
-    $("#shareDomainButton").on("click", function () {
-        var modal = $("#oneModal");
-        modal.find('.modal-title').text('Share Domain Add');
-        modal.find('.modal-body').html('<textarea rows="5" cols="70" id="textareaDomain"> </textarea><input type="hidden" name="modalType" value="shareDomainAdd" />');
-        modal.find(".modalSubmit").val("ShareSave");
-        $("#oneModal").modal({
-            backdrop: "static"
-        }
-        );
-    });
+    // $("#shareDomainButton").on("click", function () {
+    //     var modal = $("#oneModal");
+    //     modal.find('.modal-title').text('Share Domain Add');
+    //     modal.find('.modal-body').html('<textarea rows="5" cols="70" id="textareaDomain"> </textarea><input type="hidden" name="modalType" value="shareDomainAdd" />');
+    //     modal.find(".modalSubmit").val("ShareSave");
+    //     $("#oneModal").modal({
+    //         backdrop: "static"
+    //     }
+    //     );
+    // });
 
     // modal exclusive domain
     $("#exclusiveDomainButton").on("click", function () {
         var modal = $("#oneModal");
         modal.find('.modal-title').text('Exclusive Domain Add');
         modal.find('.modal-body').html('<textarea rows="5" cols="70" id="textareaDomain"> </textarea><input type="hidden" name="modalType" value="exclusiveDomainAdd" />');
-        modal.find(".modalSubmit").val("ExclusiveSave");
+        modal.find(".modalSubmit").val("Save");
         $("#oneModal").modal({
             backdrop: "static"
         });
@@ -168,23 +167,23 @@ $(function () {
         var type = $('input[name="modalType"]').val();
         if (type) {
             switch (type) {
-                case "shareDomainAdd":
-                    var domainArray = $("#textareaDomain").val().toLowerCase().split(",") || [];
-                    var selectHtml = "";
-                    domainArray.forEach(function (item,index,list) {
-                        var tmp = item.trim();
-                        if (tmp) {
-                            var flag = $('input[name="shareDomain"][value="' + tmp + '"]').val();
-                            if (!flag) {
-                                selectHtml += '<div class="checkbox"> <label> <input type="checkbox" value="' + tmp + '" name="shareDomain" checked>' + tmp + '</label> </div>';
-                            }
-                        }
-                    });
-                    if (selectHtml) {
-                        $("#contentShareDomainList").prepend(selectHtml);
-                    }
-                    $("#oneModal").modal("hide");
-                    break;
+                // case "shareDomainAdd":
+                //     var domainArray = $("#textareaDomain").val().toLowerCase().split(",") || [];
+                //     var selectHtml = "";
+                //     domainArray.forEach(function (item,index,list) {
+                //         var tmp = item.trim();
+                //         if (tmp) {
+                //             var flag = $('input[name="shareDomain"][value="' + tmp + '"]').val();
+                //             if (!flag) {
+                //                 selectHtml += '<div class="checkbox"> <label> <input type="checkbox" value="' + tmp + '" name="shareDomain" checked>' + tmp + '</label> </div>';
+                //             }
+                //         }
+                //     });
+                //     if (selectHtml) {
+                //         $("#contentShareDomainList").prepend(selectHtml);
+                //     }
+                //     $("#oneModal").modal("hide");
+                //     break;
                 case "exclusiveDomainAdd":
                     var domainArray = $("#textareaDomain").val().toLowerCase().split(",") || [];
                     var selectHtml = "";
