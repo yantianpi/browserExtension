@@ -217,8 +217,8 @@ $(function () {
                             form.append("password", password);
                             console.log("verify userName:" + currentUserName);
                             $.ajax({
-                                // url:"http://mg_comm_user:mg_comm_user@" + serverDomain + ":8099/pluginDeal.php",
-                                url:"http://" + serverDomain + "/pluginDeal.php",
+                                url:"http://mg_comm_user:mg_comm_user@" + serverDomain + ":8099/pluginDeal.php",
+                                // url:"http://" + serverDomain + "/pluginDeal.php",
                                 type:"post",
                                 data:form,
                                 processData:false,

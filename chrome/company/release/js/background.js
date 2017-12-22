@@ -85,8 +85,8 @@ function uploadServer(data) {
         var msg = {
             "type": "basic",
             "iconUrl": "icon.png",
-            "title": "save error",
-            "message": "don't set UserName",
+            "title": "page html snapshot",
+            "message": "not set UserName",
             "requireInteraction": true,
         };
         chrome.notifications.create(msg);
@@ -104,8 +104,8 @@ function uploadServer(data) {
     console.log("save page:" + pageUrl);
     console.log("length:" + content.length);
     $.ajax({
-        // url:"http://mg_comm_user:mg_comm_user@" + serverDomain + ":8099/pluginDeal.php",
-        url:"http://" + serverDomain + "/pluginDeal.php",
+        url:"http://mg_comm_user:mg_comm_user@" + serverDomain + ":8099/pluginDeal.php",
+        // url:"http://" + serverDomain + "/pluginDeal.php",
         type:"post",
         data:form,
         processData:false,
@@ -117,8 +117,8 @@ function uploadServer(data) {
             var msg = {
                 "type": "basic",
                 "iconUrl": "icon.png",
-                "title": "save error",
-                "message": "server url:" + serverDomain,
+                "title": "page html snapshot",
+                "message": "save error, server domian:" + serverDomain,
                 "requireInteraction": true,
             };
             chrome.notifications.create(msg);
